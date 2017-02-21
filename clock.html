@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clock</title>
+    <style>
+        .container{
+            margin: 0 auto;
+            width: 300px;
+            height: 300px;
+        }
+        #clock {
+            border: 1px solid #1a7a79;
+        }
+        #seconds,#minutes,#hours{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <canvas id="seconds" width="10" height="120"></canvas>
+    <canvas id="minutes" width="10" height="120"></canvas>
+    <canvas id="hours" width="10" height="120"></canvas>
+    <canvas id="clock" width="300" height="300"></canvas>
+</div>
+</body>
+<script>
+    var ctx_seconds = document.getElementById('seconds').getContext('2d');
+    ctx_seconds.lineWidth  = 2;
+    ctx_seconds.strokeStyle = "#D40000";
+    ctx_seconds.translate(0, 120);
+    ctx_seconds.beginPath();
+    ctx_seconds.moveTo(5, 0);
+    ctx_seconds.lineTo(5, -120);
+    ctx_seconds.lineTo(0, -112);
+    ctx_seconds.moveTo(5, -120);
+    ctx_seconds.lineTo(10, -112);
+    ctx_seconds.stroke();
+
+    var ctx_minutes = document.getElementById('minutes').getContext('2d');
+    ctx_minutes.lineWidth  = 2;
+    ctx_minutes.strokeStyle = "black";
+    ctx_minutes.translate(0, 120);
+    ctx_minutes.beginPath();
+    ctx_minutes.moveTo(5, 0);
+    ctx_minutes.lineTo(5, -90);
+    ctx_minutes.lineTo(0, -82);
+    ctx_minutes.moveTo(5, -90);
+    ctx_minutes.lineTo(10, -82);
+    ctx_minutes.stroke();
+
+    var ctx_hours = document.getElementById('hours').getContext('2d');
+    ctx_hours.lineWidth  = 2;
+    ctx_hours.strokeStyle = "black";
+    ctx_hours.translate(0, 120);
+    ctx_hours.beginPath();
+    ctx_hours.moveTo(5, 0);
+    ctx_hours.lineTo(5, -70);
+    ctx_hours.lineTo(0, -62);
+    ctx_hours.moveTo(5, -70);
+    ctx_hours.lineTo(10, -62);
+    ctx_hours.stroke();
+
+    var ctx = document.getElementById('clock').getContext('2d');
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.strokeStyle = 'rgba(0,153,255,0.4)';
+    ctx.beginPath();
+    ctx.arc(150,150,120,0,Math.PI*2,false);
+    ctx.stroke();
+
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 3;
+    ctx.translate(150, 150);
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(0,-100);
+    ctx.lineTo(0, -115);
+    ctx.stroke();
+    for(var i=1; i<60; i++){
+        ctx.rotate(Math.PI/30);
+        ctx.beginPath();
+        if(i%5 == 0){
+            ctx.lineWidth = 3;
+            ctx.moveTo(0,-100);
+            ctx.lineTo(0, -115);
+        } else{
+            ctx.lineWidth = 1;
+            ctx.moveTo(0,-105);
+            ctx.lineTo(0, -115);
+        }
+        ctx.stroke();
+    }
+    ctx.restore();
+    ctx.beginPath();
+    ctx.fillStyle = "rgba(255,255,255,1)";
+    ctx.save();
+    var then = new Date().getSeconds();
+    function update_second(){
+        var now = new Date();
+        var second = now.getSeconds();
+        var minute = now.getMinutes();
+        var hour = now.getHours();
+        if( (second-then) >= 1){
+            ctx.arc(0,0,96,0,Math.PI*2,false);
+            ctx.fill();
+            ctx.restore();
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(0,0,4,0,Math.PI*2,false);
+            ctx.stroke();
+            ctx.closePath();
+            ctx.rotate(Math.PI*second/30);
+            ctx.drawImage(document.getElementById('seconds'), -5, -95);
+            ctx.restore();
+            ctx.save();
+            ctx.rotate(Math.PI*minute/30);
+            ctx.drawImage(document.getElementById('minutes'), -5, -95);
+            ctx.restore();
+            ctx.save();
+            ctx.rotate(Math.PI*hour/6+Math.PI*minute/360);
+            ctx.drawImage(document.getElementById('hours'), -5, -105);
+            then = second == 59 ? -1 : second;
+        }
+        window.requestAnimationFrame(update_second);
+    }
+    window.requestAnimationFrame(update_second);
+</script>
+</html>
